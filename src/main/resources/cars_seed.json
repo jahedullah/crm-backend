@@ -1,0 +1,12 @@
+[
+  {"licensePlate": "ABC-1001", "seatCount": 4, "convertible": false, "engineType": "GAS", "manufacturer": "Toyota"},
+  {"licensePlate": "DEF-1002", "seatCount": 2, "convertible": true, "engineType": "ELECTRIC", "manufacturer": "Tesla"},
+  {"licensePlate": "GHI-1003", "seatCount": 5, "convertible": false, "engineType": "HYBRID", "manufacturer": "Honda"},
+  {"licensePlate": "JKL-1004", "seatCount": 4, "convertible": false, "engineType": "DIESEL", "manufacturer": "Ford"},
+  {"licensePlate": "MNO-1005", "seatCount": 7, "convertible": false, "engineType": "GAS", "manufacturer": "Chevrolet"},
+  {"licensePlate": "PQR-1006", "seatCount": 4, "convertible": true, "engineType": "GAS", "manufacturer": "BMW"},
+  {"licensePlate": "STU-1007", "seatCount": 2, "convertible": true, "engineType": "ELECTRIC", "manufacturer": "Audi"},
+  {"licensePlate": "VWX-1008", "seatCount": 5, "convertible": false, "engineType": "HYBRID", "manufacturer": "Hyundai"},
+  {"licensePlate": "YZA-1009", "seatCount": 4, "convertible": false, "engineType": "DIESEL", "manufacturer": "Kia"},
+  {"licensePlate": "BCD-1010", "seatCount": 4, "convertible": false, "engineType": "GAS", "manufacturer": "Mazda"}
+]

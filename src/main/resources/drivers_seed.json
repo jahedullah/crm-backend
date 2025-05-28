@@ -1,0 +1,12 @@
+[
+  {"name": "Alice", "onlineStatus": true},
+  {"name": "Bob", "onlineStatus": false},
+  {"name": "Charlie", "onlineStatus": true},
+  {"name": "David", "onlineStatus": false},
+  {"name": "Eva", "onlineStatus": true},
+  {"name": "Frank", "onlineStatus": false},
+  {"name": "Grace", "onlineStatus": true},
+  {"name": "Helen", "onlineStatus": false},
+  {"name": "Isaac", "onlineStatus": true},
+  {"name": "Julia", "onlineStatus": false}
+]
