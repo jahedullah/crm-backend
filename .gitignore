@@ -1,0 +1,43 @@
+# Ignore build output
+/target/
+/build/
+
+# Ignore IDE/project files
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Ignore Maven wrapper jar
+.mvn/wrapper/maven-wrapper.jar
+
+# Ignore logs and OS files
+*.log
+.DS_Store
+
+# Ignore VS Code settings
+.vscode/
+
+# Ignore NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# Ignore generated files
+**/generated-sources/
+
+# Do not ignore source files
+!src/main/**
+!src/test/**
+
+# Ignore environment files (if any)
+.env
+
+# Ignore static and templates only if generated (uncomment if needed)
+# /src/main/resources/static/
+# /src/main/resources/templates/
+
+# Ignore other unnecessary files
+*.class
