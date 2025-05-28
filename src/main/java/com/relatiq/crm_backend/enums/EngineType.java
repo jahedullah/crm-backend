@@ -1,4 +1,4 @@
-package com.relatiq.crm_backend.enumtype;
+package com.relatiq.crm_backend.enums;
 
 public enum EngineType {
     ELECTRIC,

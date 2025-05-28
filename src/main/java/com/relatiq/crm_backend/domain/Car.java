@@ -1,9 +1,10 @@
 package com.relatiq.crm_backend.domain;
 
-import com.relatiq.crm_backend.enumtype.EngineType;
+import com.relatiq.crm_backend.enums.EngineType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.time.ZonedDateTime;
 
 @Entity

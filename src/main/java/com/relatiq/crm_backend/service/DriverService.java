@@ -5,8 +5,10 @@ import com.relatiq.crm_backend.domain.Driver;
 import com.relatiq.crm_backend.dto.CarResponseDto;
 import com.relatiq.crm_backend.dto.DriverRequestDto;
 import com.relatiq.crm_backend.dto.DriverResponseDto;
-import com.relatiq.crm_backend.enumtype.EngineType;
 import com.relatiq.crm_backend.exception.CarAlreadyInUseException;
+import com.relatiq.crm_backend.exception.CarNotFoundException;
+import com.relatiq.crm_backend.exception.DriverNotFoundException;
+import com.relatiq.crm_backend.exception.DriverNotOnlineException;
 import com.relatiq.crm_backend.repository.CarRepository;
 import com.relatiq.crm_backend.repository.DriverRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,6 +37,16 @@ public class DriverService {
         Driver driver = new Driver();
         BeanUtils.copyProperties(dto, driver);
         if (dto.getSelectedCarId() != null) {
+            // Check if car is already assigned
+            boolean inUse = driverRepository.findAll().stream()
+                    .anyMatch(d -> d.getSelectedCar() != null && d.getSelectedCar().getId().equals(dto.getSelectedCarId()));
+            if (inUse) {
+                throw new CarAlreadyInUseException("Car is already assigned to another driver");
+            }
+            // Only assign car if driver is online
+            if (!Boolean.TRUE.equals(dto.getOnlineStatus())) {
+                throw new DriverNotOnlineException("Car can only be assigned to an online driver");
+            }
             carRepository.findById(dto.getSelectedCarId()).ifPresent(driver::setSelectedCar);
         }
         driver = driverRepository.save(driver);
@@ -48,6 +59,16 @@ public class DriverService {
         Driver driver = optional.get();
         BeanUtils.copyProperties(dto, driver, "id", "dateCreated");
         if (dto.getSelectedCarId() != null) {
+            // Check if car is already assigned
+            boolean inUse = driverRepository.findAll().stream()
+                    .anyMatch(d -> d.getSelectedCar() != null && d.getSelectedCar().getId().equals(dto.getSelectedCarId()) && !d.getId().equals(id));
+            if (inUse) {
+                throw new CarAlreadyInUseException("Car is already assigned to another driver");
+            }
+            // Only assign car if driver is online
+            if (!Boolean.TRUE.equals(dto.getOnlineStatus())) {
+                throw new DriverNotOnlineException("Car can only be assigned to an online driver");
+            }
             carRepository.findById(dto.getSelectedCarId()).ifPresent(driver::setSelectedCar);
         } else {
             driver.setSelectedCar(null);
@@ -61,12 +82,16 @@ public class DriverService {
     }
 
     public DriverResponseDto assignCar(Long driverId, Long carId) {
-        Driver driver = driverRepository.findById(driverId).orElseThrow(() -> new RuntimeException("Driver not found"));
-        Car car = carRepository.findById(carId).orElseThrow(() -> new RuntimeException("Car not found"));
+        Driver driver = driverRepository.findById(driverId).orElseThrow(() -> new DriverNotFoundException());
+        Car car = carRepository.findById(carId).orElseThrow(() -> new CarNotFoundException());
         boolean inUse = driverRepository.findAll().stream()
-                .anyMatch(d -> d.getSelectedCar() != null && d.getSelectedCar().getId().equals(carId) && Boolean.TRUE.equals(d.getOnlineStatus()) && !d.getId().equals(driverId));
+                .anyMatch(d -> d.getSelectedCar() != null && d.getSelectedCar().getId().equals(carId) && !d.getId().equals(driverId));
         if (inUse) {
-            throw new CarAlreadyInUseException("Car is already assigned to another online driver");
+            throw new CarAlreadyInUseException("Car is already assigned to another driver");
+        }
+        // Only assign car if driver is online
+        if (!Boolean.TRUE.equals(driver.getOnlineStatus())) {
+            throw new DriverNotOnlineException("Car can only be assigned to an online driver");
         }
         driver.setSelectedCar(car);
         driverRepository.save(driver);
@@ -74,28 +99,10 @@ public class DriverService {
     }
 
     public DriverResponseDto unassignCar(Long driverId) {
-        Driver driver = driverRepository.findById(driverId).orElseThrow(() -> new RuntimeException("Driver not found"));
+        Driver driver = driverRepository.findById(driverId).orElseThrow(() -> new DriverNotFoundException());
         driver.setSelectedCar(null);
         driverRepository.save(driver);
         return toResponseDto(driver);
-    }
-
-    public List<DriverResponseDto> filterDrivers(EngineType engineType, Boolean convertible, Double minRating, Double maxRating) {
-        List<Driver> drivers = driverRepository.findAll();
-        Predicate<Driver> predicate = d -> true;
-        if (engineType != null) {
-            predicate = predicate.and(d -> d.getSelectedCar() != null && d.getSelectedCar().getEngineType() == engineType);
-        }
-        if (convertible != null) {
-            predicate = predicate.and(d -> d.getSelectedCar() != null && d.getSelectedCar().getConvertible() == convertible);
-        }
-        if (minRating != null) {
-            predicate = predicate.and(d -> d.getSelectedCar() != null && d.getSelectedCar().getRating() != null && d.getSelectedCar().getRating() >= minRating);
-        }
-        if (maxRating != null) {
-            predicate = predicate.and(d -> d.getSelectedCar() != null && d.getSelectedCar().getRating() != null && d.getSelectedCar().getRating() <= maxRating);
-        }
-        return drivers.stream().filter(predicate).map(this::toResponseDto).collect(Collectors.toList());
     }
 
     private DriverResponseDto toResponseDto(Driver driver) {

@@ -3,6 +3,7 @@ package com.relatiq.crm_backend.service;
 import com.relatiq.crm_backend.domain.Car;
 import com.relatiq.crm_backend.dto.CarRequestDto;
 import com.relatiq.crm_backend.dto.CarResponseDto;
+import com.relatiq.crm_backend.enums.EngineType;
 import com.relatiq.crm_backend.repository.CarRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -46,6 +47,17 @@ public class CarService {
 
     public void delete(Long id) {
         carRepository.deleteById(id);
+    }
+
+    public List<CarResponseDto> filterCars(EngineType engineType, Boolean convertible, Double minRating, Double maxRating) {
+        List<Car> cars = carRepository.findAll();
+        return cars.stream()
+                .filter(car -> (engineType == null || car.getEngineType() == engineType))
+                .filter(car -> (convertible == null || Boolean.TRUE.equals(car.getConvertible()) == convertible))
+                .filter(car -> (minRating == null || (car.getRating() != null && car.getRating() >= minRating)))
+                .filter(car -> (maxRating == null || (car.getRating() != null && car.getRating() <= maxRating)))
+                .map(this::toResponseDto)
+                .collect(Collectors.toList());
     }
 
     private CarResponseDto toResponseDto(Car car) {

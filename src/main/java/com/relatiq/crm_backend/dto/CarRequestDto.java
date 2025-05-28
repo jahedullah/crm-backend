@@ -1,6 +1,6 @@
 package com.relatiq.crm_backend.dto;
 
-import com.relatiq.crm_backend.enumtype.EngineType;
+import com.relatiq.crm_backend.enums.EngineType;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 

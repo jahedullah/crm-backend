@@ -1,6 +1,7 @@
 package com.relatiq.crm_backend.dto;
 
 import lombok.Data;
+
 import java.time.ZonedDateTime;
 
 @Data

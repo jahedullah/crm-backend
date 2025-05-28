@@ -18,12 +18,12 @@ public class AuthService {
 
     public AuthResponse login(AuthRequest request) {
         if (request.getUsername() == null || request.getUsername().isBlank() ||
-            request.getPassword() == null || request.getPassword().isBlank()) {
+                request.getPassword() == null || request.getPassword().isBlank()) {
             throw new InvalidCredentialsException("Your username or password is missing.");
         }
         try {
             Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
             );
             UserDetails user = (UserDetails) authentication.getPrincipal();
             String token = jwtService.generateToken(user);
