@@ -1,23 +1,55 @@
 package com.relatiq.crm_backend.exception;
 
+import com.relatiq.crm_backend.dto.ApiResponse;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.ZonedDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestControllerAdvice
 public class CommonExceptionHandler {
     @ExceptionHandler(InvalidCredentialsException.class)
-    public ResponseEntity<?> handleInvalidCredentials(InvalidCredentialsException ex) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", ZonedDateTime.now());
-        body.put("status", HttpStatus.UNAUTHORIZED.value());
-        body.put("error", "Unauthorized");
-        body.put("message", ex.getMessage());
-        return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<ApiResponse<Object>> handleInvalidCredentials(InvalidCredentialsException ex) {
+        ApiResponse<Object> response = ApiResponse.builder()
+                .timestamp(ZonedDateTime.now())
+                .status(HttpStatus.UNAUTHORIZED.value())
+                .message(ex.getMessage())
+                .data(null)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    }
+    @ExceptionHandler(CarAlreadyInUseException.class)
+    public ResponseEntity<ApiResponse<Object>> handleCarAlreadyInUse(CarAlreadyInUseException ex) {
+        ApiResponse<Object> response = ApiResponse.builder()
+                .timestamp(ZonedDateTime.now())
+                .status(HttpStatus.CONFLICT.value())
+                .message(ex.getMessage())
+                .data(null)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
+    @ExceptionHandler(SignatureException.class)
+    public ResponseEntity<ApiResponse<Object>> handleJwtSignatureException(SignatureException ex) {
+        ApiResponse<Object> response = ApiResponse.builder()
+                .timestamp(ZonedDateTime.now())
+                .status(HttpStatus.UNAUTHORIZED.value())
+                .message("Invalid or tampered JWT token.")
+                .data(null)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    }
+    @ExceptionHandler({IllegalArgumentException.class, org.springframework.http.converter.HttpMessageNotReadableException.class})
+    public ResponseEntity<ApiResponse<Object>> handleInvalidEnum(Exception ex) {
+        String message = "Invalid value provided for an enum field. Please use a valid value.";
+        ApiResponse<Object> response = ApiResponse.builder()
+                .timestamp(ZonedDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .message(message)
+                .data(null)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }
